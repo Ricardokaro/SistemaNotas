@@ -59,7 +59,8 @@ namespace SistemaNotas.Web.Controllers {
                 .Include(d => d.anioescolar)
                 .Include(d => d.curso)
                 .Include(d => d.docente)
-                .Where(d => d.idanio_escolar == model.idanio_escolar && d.idcurso == model.idcurso && d.iddocente == model.iddocente)
+                .Where(d => d.idanio_escolar == model.idanio_escolar && d.iddocente == model.iddocente
+                || d.idanio_escolar == model.idanio_escolar && d.idcurso == model.idcurso)
                 .ToListAsync();
 
             if (buscarDirector.Count > 0)

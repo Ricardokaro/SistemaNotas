@@ -125,7 +125,7 @@ namespace SistemaNotas.Web.Controllers
                 password_hash = u.password_hash,
                 condicion = u.condicion
             });
-        }
+        }     
 
         // GET: api/Usuarios/SelectEstudiantes
         [Authorize(Roles = "Administrador")]

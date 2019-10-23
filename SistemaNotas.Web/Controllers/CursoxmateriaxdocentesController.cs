@@ -107,6 +107,27 @@ namespace SistemaNotas.Web.Controllers
             });
         }
 
+        // GET: api/Cursoxmateriaxdocentes/ListarCursosDocenteDirector
+        [Authorize(Roles = "Administrador, Docente")]
+        [HttpPost("[action]")]
+        public async Task<IEnumerable<CursoxDocenteViewModel>> ListarCursosDocenteDirector([FromBody] ConsultaCursoxDocenteViewModel model)
+        {
+
+            var cursoxanioxdocente = await _context.cursoxmateriaxdocentes
+                .Include(cmd => cmd.curso)
+                    .ThenInclude(d => d.directores)
+                .Include(cmd => cmd.docente)
+                .Include(cmd => cmd.anioescolar)
+                .Where(cmd => cmd.curso.directores.Count(d => d.iddocente == model.iddocente && d.idanio_escolar==model.idanio_escolar) > 0)
+                .ToListAsync();
+
+            return cursoxanioxdocente.Select(cmd => new CursoxDocenteViewModel
+            {
+                idcurso = cmd.idcurso,
+                curso = cmd.curso.nombre
+            });
+        }
+
         // GET: api/Cursoxmateriaxdocentes/ListarMateriaDocente
         [Authorize(Roles = "Administrador, Docente")]
         [HttpPost("[action]")]

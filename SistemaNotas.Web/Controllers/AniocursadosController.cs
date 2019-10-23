@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using SistemaNotas.Datos;
 using SistemaNotas.Entidades.Estudiante;
 using SistemaNotas.Web.Models.Estudiante;
+using SistemaNotas.Web.Models.Administrar.Aniocursado;
 
 namespace SistemaNotas.Web.Controllers
 {
@@ -67,6 +68,32 @@ namespace SistemaNotas.Web.Controllers
                .ToListAsync();
 
             return aniocursados.Select(a => new AniocursadoViewModel {
+                idanio_cursado = a.idanio_cursado,
+                idcurso = a.idcurso,
+                curso = a.curso.nombre,
+                idestudiante = a.idestudiante,
+                estudiante = a.estudiante.primer_nombre + " " + a.estudiante.primer_apellido + " " + a.estudiante.segundo_apellido,
+                idanio_escolar = a.idanio_escolar,
+                anio_escolar = a.anioescolar.nombre,
+                estado = a.estado
+            });
+        }
+
+        // GET: api/Aniocursados/Listar
+        [Authorize(Roles = "Administrador, Docente")]
+        [HttpPost("[action]")]
+        public async Task<IEnumerable<AniocursadoViewModel>> ListarEstudiantesxDirector([FromBody] EstudiantexDirectorViewModel model)
+        {
+            var aniocursados = await _context.aniocursados
+               .Include(ac => ac.curso)
+                    .ThenInclude(d => d.directores)
+               .Include(ac => ac.estudiante)
+               .Include(ac => ac.anioescolar)
+               .Where(ac => ac.idanio_escolar == model.idanio_escolar && ac.idcurso == model.idcurso && ac.curso.directores.Count(d => d.iddocente  == model.iddirector) > 0)
+               .ToListAsync();
+
+            return aniocursados.Select(a => new AniocursadoViewModel
+            {
                 idanio_cursado = a.idanio_cursado,
                 idcurso = a.idcurso,
                 curso = a.curso.nombre,
